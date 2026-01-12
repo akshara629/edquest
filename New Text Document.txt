@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <title>Reading Task</title>
+  <link rel="stylesheet" href="style1.css">
+  <script>
+    let subject, level;
+    let timeLeft = 120;
+    let timer;
+
+    // content structure used across pages
+    const content = {
+      "Maths": {
+        "Easy": { paragraph:"Easy math, Particularly with numbers and addition, is the foundation of all mathematical understanding. It's the starting point for developing crucial skills like counting, grouping, and simple calculation. When we first learn to add, we're essentially just combining sets of objects—like adding two apples to three apples to get a total of five. This process, known as cardinality, helps us understand that a number represents a specific quantity of things.  Learning addition isn't just about memorizing facts; it's about building a mental model of how numbers interact", questions:["What is 2+2?","What is 5-3?"], game:"game-maths-easy.html" },
+        "Medium": { paragraph:"Simple algebra is like a fun detective game with numbers! 🕵‍♀ Instead of knowing all the numbers, you have to find a missing number, which we call a variable. We often use a letter like x to be the secret number we need to find. It's all about figuring out the puzzle by keeping everything fair and equal on both sides of the equals sign.", questions:["Solve x+3=5","10/2=?"], game:"<a href='#'>🎮 Maths Medium Game</a>" },
+        "Hard": { paragraph:"Calculus can tell you your exact speed at one specific moment, no matter how fast you're changing. It's like having a super-powered magnifying glass for change!  It also helps us find the area of weird, curvy shapes that don't have straight sides, like a puddle on the ground. Calculus helps us figure out the 'story' behind motion, growth, and all sorts of changing things in the world, one tiny piece at a time. It’s all about breaking big, complex problems into super-small, manageable parts to find the answers! 🚀", questions:["Differentiate x²","Integrate 2x"], game:"<a href='#'>🎮 Maths Hard Game</a>" }
+      },
+      "Science": {
+        "Easy": { paragraph:"Easy science about plants is all about how they eat and breathe. 🌿 Plants are incredible because they are like tiny factories that can make their own food! This special process is called photosynthesis. It's how plants use sunlight, water, and a gas called carbon dioxide to create their food, which is a type of sugar.", questions:["Plants make food by?","What gas do plants release?"], game:"<a href='#'>🎮 Science Easy Game</a>" },
+        "Medium": { paragraph:"Medium science about atoms and molecules gets a little more detailed, like a puzzle with tiny, invisible pieces. ⚛ Everything around us—from the air we breathe to the chair you're sitting on—is made up of atoms, which are the smallest units of matter. At the very center of an atom is a dense core called the nucleus, which holds positively charged protons and neutral neutrons. Flying around the nucleus in a cloud are tiny, negatively charged particles called electrons. When two or more atoms join together, they form a molecule. For example, a water molecule is made of two hydrogen atoms and one oxygen atom stuck together. So, an atom is the basic building block, and molecules are the structures they create when they bond.", questions:["Center of atom?","Name a subatomic particle?"], game:"<a href='#'>🎮 Science Medium Game</a>" },
+        "Hard": { paragraph:"Hard science:", questions:["Who proposed relativity?","Formula of E=?"], game:"<a href='#'>🎮 Science Hard Game</a>" }
+      },
+      "GK": {
+        "Easy": { paragraph:"Easy GK: Easy general knowledge is about the basic facts that help us understand the world around us. 🌍 A great place to start is with countries, their capitals, and their leaders. The capital is the most important city in a country, often where the government is located. For example, the capital of India is New Delhi, a major center for politics and culture. The leader, like the Prime Minister, is the person in charge of running the government and making decisions for the country. Knowing these key details helps us get a basic sense of a country's identity and its role in the world.", questions:["Capital of India?","Prime Minister of India?"], game:"<a href='#'>🎮 GK Easy Game</a>" },
+        "Medium": { paragraph:"Medium GK: Medium GK tests a deeper knowledge of a country's geography and administrative structure. 🗺 While easy GK focuses on the nation's capital, medium GK asks you to navigate the country's internal divisions: its states and their capitals. India, a vast and diverse nation, is organized into multiple states, each with its own unique culture, language, and capital city. Knowing these facts is key to understanding the regional diversity and political landscape of a large country. For example, knowing that Jaipur is the capital of Rajasthan connects you to the history of its magnificent palaces and forts, rather than just the national government.", questions:["How many states in India?","Capital of Rajasthan?"], game:"<a href='#'>🎮 GK Medium Game</a>" },
+        "Hard": { paragraph:"Hard GK: Welcome to the ultimate test of your historical knowledge! 🗺 This isn't just about identifying buildings; it's about uncovering the stories and legacies etched into stone. These monuments are more than just landmarks—they are silent witnesses to a nation's defining moments. For instance, in India, one stands as a breathtaking tribute to love so profound it moved an emperor to build a wonder of the world. Another, a striking archway in a bustling capital, is not just a gate but a solemn memorial to the bravery of soldiers who gave everything for their country. Knowing these places is like holding a key to the past, unlocking the secrets of a nation's soul.", questions:["Famous wonder in India?","India Gate is in which city?"], game:"<a href='#'>🎮 GK Hard Game</a>" }
+      },
+      "History": {
+        "Easy": { paragraph:"Easy History: Easy history is about learning the great stories and heroes that have shaped our culture. 📜 Epics are long, epic poems that tell tales of brave heroes, gods, and important events. In Indian history, two of the most famous epics are the Ramayana and the Mahabharata. These stories are not just exciting adventures; they also teach important lessons about duty, honor, and courage. The Ramayana, for instance, tells the story of Lord Rama, a revered figure in Hinduism, and his journey to rescue his wife, Sita. These epics are a fundamental part of a nation's identity and religious heritage.", questions:["Religion of Lord Rama?","Name of religious book?"], game:"<a href='#'>🎮 History Easy Game</a>" },
+        "Medium": { paragraph:"Medium History: Imagine a story so ancient, its words were first passed down not from a book, but from the memory of a great, wise sage. 📜 This grand epic tells the tale of a righteous prince's journey, but what's truly fascinating is the story behind the story. The very person who is credited with composing and writing this religious text was not just a storyteller, but a character who witnessed parts of the events himself! He wove the narrative of Lord Rama’s life into a beautiful scripture, making it a timeless tale that has been retold for thousands of years.", questions:["Who wrote Ramayana?","Name the wives of Dasharatha?"], game:"<a href='#'>🎮 History Medium Game</a>" },
+        "Hard": { paragraph:"Hard History: Stepping into hard history isn't about memorizing dates; it's about understanding the complex interplay of cultures, events, and their lasting legacies. 📜 These are the moments that truly defined civilizations, from the rise and fall of empires to the cultural exchanges that blended traditions. To grasp this level of history, you must go beyond the 'what' and ask the 'why.' You might examine how the ancient Silk Road didn't just move goods but also ideas, religions, and diseases, completely reshaping societies across continents.  Or, you could analyze how the fall of the Mughal Empire influenced modern Indian politics and art. These questions require you to connect different threads of history and see how they weave together to create the intricate tapestry of our world today.", questions:["How many major religions?","Which country is known for religious diversity?"], game:"<a href='#'>🎮 History Hard Game</a>" }
+      }
+    };
+
+    function startTimer(){
+      timer = setInterval(()=>{
+        if(timeLeft <= 0){
+          clearInterval(timer);
+          document.getElementById("timer").textContent = "⏰ Time’s up!";
+          showQuestions();
+        } else {
+          const m = Math.floor(timeLeft/60), s = timeLeft%60;
+          document.getElementById("timer").textContent = `⏳ ${m}:${s<10?'0':''}${s}`;
+          timeLeft--;
+        }
+      }, 1000);
+    }
+
+    function showQuestions(){ document.getElementById("questions1").style.display = "block"; }
+
+    window.onload = function(){
+      subject = localStorage.getItem("subject");
+      level = localStorage.getItem("level");
+      if(!subject || !level){ alert("No subject/level selected. Going to Home."); window.location.href="map1.html"; return; }
+      document.getElementById("title").innerText = subject + " — " + level;
+      const data = content[subject][level];
+      document.getElementById("paragraph").innerText = data.paragraph;
+      document.getElementById("timer").innerText = "⏳ 2:00";
+      startTimer();
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2 id="title">Reading Task</h2>
+    <div id="timer"></div>
+
+    <div id="paragraphBox">
+      <p id="paragraph"></p>
+      <div style="margin-top:10px;">
+        <button onclick="window.location.href='questions1.html'">Proceed to Questions</button>
+      </div>
+    </div>
+
+    <div id="questions1" style="display:none; text-align:left; margin-top:12px;">
+      <h3>Questions</h3>
+      <div id="qArea">
+        <!-- questions filled on question1.html, here only navigate -->
+        <p>Now answer the next questions on the questions page.</p>
+      </div>
+      <div class="footer-actions">
+        <button onclick="window.location.href='question1.html'">Proceed to Questions</button>
+        <button onclick="window.location.href='levels1.html'" class="link-like">⬅ Back</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button onclick="window.location.href='levels1.html'">⬅ Back</button>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Game</title>
+  <link rel="stylesheet" href="style1.css">
+  <script>
+    let subject, level;
+    const games = {
+      "Maths": {
+        "Easy":"<iframe src='about:blank' width='420' height='260'></iframe>",
+        "Medium":"<iframe src='about:blank' width='420' height='260'></iframe>",
+        "Hard":"<iframe src='about:blank' width='420' height='260'></iframe>"
+      },
+      "Science":{"Easy":"<iframe src='about:blank' width='420' height='260'></iframe>","Medium":"<iframe src='about:blank' width='420' height='260'></iframe>","Hard":"<iframe src='about:blank' width='420' height='260'></iframe>"},
+      "GK":{"Easy":"<iframe src='about:blank' width='420' height='260'></iframe>","Medium":"<iframe src='about:blank' width='420' height='260'></iframe>","Hard":"<iframe src='about:blank' width='420' height='260'></iframe>"},
+      "History":{"Easy":"<iframe src='about:blank' width='420' height='260'></iframe>","Medium":"<iframe src='about:blank' width='420' height='260'></iframe>","Hard":"<iframe src='about:blank' width='420' height='260'></iframe>"}
+    }
+
+    function loadGame(){
+      subject = localStorage.getItem("subject");
+      level = localStorage.getItem("level");
+      if(!subject||!level){ alert("No subject/level"); window.location.href='map1.html'; return; }
+      document.getElementById("title").innerText = subject + " — " + level + " Game";
+      document.getElementById("gameBox").innerHTML = games[subject][level] || "<p>No game set</p>";
+    }
+
+    function finishGame(){
+      // demo: gameScore 0..10
+      const gs = Math.floor(Math.random()*11);
+      localStorage.setItem("gameScore", gs);
+      window.location.href = "reward1.html";
+    }
+
+    window.onload = loadGame;
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2 id="title">Mini Game</h2>
+    <div id="gameBox" style="margin:12px 0;">Loading game...</div>
+    <button onclick="finishGame()">Finish Game</button>
+    <button onclick="window.location.href='question1.html'">⬅ Back</button>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style1.css">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0; padding: 0;
+      background: #f5f7fb;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #4a6cf7;
+      color: white;
+      padding: 14px 20px;
+    }
+
+    .dashboard-header .hi-user {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .menu-box {
+      position: relative;
+    }
+    .icon-btn {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: white;
+    }
+    .profile-pic {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+
+    /* Profile side portal */
+    .profile-portal {
+      position: fixed;
+      top: 0; left: -400px;
+      width: 340px;
+      height: 100%;
+      background: white;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+      padding: 20px;
+      transition: 0.3s ease;
+      overflow-y: auto;
+      z-index: 999;
+    }
+    .profile-portal.active { left: 0; }
+    .profile-portal h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #333;
+    }
+    .profile-field {
+      margin-bottom: 12px;
+    }
+    .profile-field label {
+      font-size: 14px;
+      color: #555;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .profile-field input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .save-btn {
+      display: block;
+      width: 100%;
+      background: #4a6cf7;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    /* Dashboard body */
+    .dashboard-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 40px;
+    }
+
+    .home-btn {
+      background: #4a6cf7;
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+      border: none;
+      padding: 18px 36px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .scorecards {
+      width: 90%;
+      max-width: 800px;
+      margin: 30px auto;
+    }
+    .scorecard {
+      background: white;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .scorecard h3 {
+      margin-top: 0;
+      color: #444;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th, .table td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+  </style>
+</head>
+<body onload="loadProfile()">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <div class="hi-user" id="greeting">Hi, Guest</div>
+      <div id="smallId" style="font-size:13px;opacity:0.8;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="menu-box">
+        <button class="icon-btn" onclick="toggleProfile()">⋮</button>
+      </div>
+      <img id="profilePic" class="profile-pic" src="https://via.placeholder.com/72" alt="Profile">
+    </div>
+  </div>
+
+  <!-- PROFILE PORTAL -->
+  <div id="profilePortal" class="profile-portal">
+    <h2>Profile Details</h2>
+    <div style="text-align:center;margin-bottom:12px;">
+      <img id="profilePreview" class="profile-pic" src="https://via.placeholder.com/100" style="width:100px;height:100px;">
+      <input type="file" id="uploadPic" accept="image/*" onchange="uploadProfilePic()" style="margin-top:8px;">
+    </div>
+    <div class="profile-field"><label>Name</label><input type="text" id="nameInput"></div>
+    <div class="profile-field"><label>Gender</label><input type="text" id="genderInput"></div>
+    <div class="profile-field"><label>Email</label><input type="email" id="emailInput"></div>
+    <div class="profile-field"><label>Phone</label><input type="tel" id="phoneInput"></div>
+    <div class="profile-field"><label>DOB</label><input type="date" id="dobInput"></div>
+    <button class="save-btn" onclick="saveProfile()">Save Profile</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="dashboard-main">
+    <button class="home-btn" onclick="goHome()">🏠 Home (Play)</button>
+    <div class="scorecards" id="scorecards"></div>
+  </div>
+
+<script>
+  function loadProfile(){
+    const user = localStorage.getItem("currentUser") || localStorage.getItem("userid") || "Guest";
+    document.getElementById("greeting").innerText = "Hi, " + user;
+    document.getElementById("smallId").innerText = "User: " + (localStorage.getItem("userid") || "Guest");
+
+    // profile data
+    document.getElementById("nameInput").value = localStorage.getItem("name") || "";
+    document.getElementById("genderInput").value = localStorage.getItem("gender") || "";
+    document.getElementById("emailInput").value = localStorage.getItem("email") || "";
+    document.getElementById("phoneInput").value = localStorage.getItem("phone") || "";
+    document.getElementById("dobInput").value = localStorage.getItem("dob") || "";
+
+    const pic = localStorage.getItem("profilePic");
+    if(pic){
+      document.getElementById("profilePic").src = pic;
+      document.getElementById("profilePreview").src = pic;
+    }
+
+    renderScorecards();
+  }
+
+  function toggleProfile(){
+    const portal = document.getElementById("profilePortal");
+    portal.classList.toggle("active");
+  }
+
+  function uploadProfilePic(){
+    const f = document.getElementById("uploadPic").files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const data = e.target.result;
+      localStorage.setItem("profilePic", data);
+      document.getElementById("profilePic").src = data;
+      document.getElementById("profilePreview").src = data;
+    };
+    reader.readAsDataURL(f);
+  }
+
+  function saveProfile(){
+    localStorage.setItem("name", document.getElementById("nameInput").value);
+    localStorage.setItem("gender", document.getElementById("genderInput").value);
+    localStorage.setItem("email", document.getElementById("emailInput").value);
+    localStorage.setItem("phone", document.getElementById("phoneInput").value);
+    localStorage.setItem("dob", document.getElementById("dobInput").value);
+
+    localStorage.setItem("currentUser", document.getElementById("nameInput").value || "Guest");
+    loadProfile();
+    alert("Profile saved successfully!");
+  }
+
+  function goHome(){
+    window.location.href = "map1.html";
+  }
+
+  function renderScorecards(){
+    const attempts = JSON.parse(localStorage.getItem("attempts")) || [];
+    const container = document.getElementById("scorecards");
+    container.innerHTML = "";
+
+    if(!attempts.length){
+      container.innerHTML = "<p style='text-align:center;color:#666;'>No attempts yet. Click Home to start.</p>";
+      return;
+    }
+
+    const grouped = {};
+    attempts.forEach(a => {
+      const subj = a.subject || "Unknown";
+      if(!grouped[subj]) grouped[subj] = [];
+      grouped[subj].push(a);
+    });
+
+    for(const subj in grouped){
+      let html = `<div class="scorecard"><h3>${subj} 📚</h3>
+        <table class="table"><thead>
+          <tr><th>#</th><th>Level</th><th>Quiz</th><th>Game</th><th>Total</th></tr>
+        </thead><tbody>`;
+      grouped[subj].forEach((row, i) => {
+        html += `<tr>
+          <td>${i+1}</td>
+          <td>${row.level || "-"}</td>
+          <td>${row.quiz || 0}/2</td>
+          <td>${row.game || 0}/10</td>
+          <td><b>${row.total || row.score || 0}</b></td>
+        </tr>`;
+      });
+      html += "</tbody></table></div>";
+      container.innerHTML += html;
+    }
+  }
+</script>
+</body>
+</html>
